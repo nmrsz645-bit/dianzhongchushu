@@ -15,9 +15,9 @@ function Ensure-Template([string]$Name, [string]$Content) {
 }
 
 Ensure-Template ((Name @(0x7F51, 0x5740)) + ".txt") "https://admin.wqxsw.com/"
-Ensure-Template ((Name @(0x4F01, 0x4E1A, 0x5FAE, 0x4FE1)) + ".txt") "Fill in the WeCom webhook URL"
-Ensure-Template ((Name @(0x98DE, 0x4E66, 0x63A5, 0x53E3, 0x548C, 0x94FE, 0x63A5)) + ".txt") "Fill in Feishu App ID, App Secret, and sheet URL"
-Ensure-Template ((Name @(0x9009, 0x62E9, 0x8D44, 0x6E90)) + "id.txt") "Fill in the numeric resource ID"
+Ensure-Template ((Name @(0x4F01, 0x4E1A, 0x5FAE, 0x4FE1)) + ".txt") "请填写企业微信 Webhook URL"
+Ensure-Template ((Name @(0x98DE, 0x4E66, 0x63A5, 0x53E3, 0x548C, 0x94FE, 0x63A5)) + ".txt") "请填写飞书 App ID、App Secret 和表格链接"
+Ensure-Template ((Name @(0x9009, 0x62E9, 0x8D44, 0x6E90)) + "id.txt") "请填写数字资源 ID"
 Ensure-Template ((Name @(0x8FDD, 0x7981, 0x8BCD)) + ".txt") ""
 Ensure-Template ("DeepSeek" + (Name @(0x63A5, 0x53E3)) + ".txt") "启用：否`r`nAPI Key：`r`n模型：deepseek-chat"
 Ensure-Template ((Name @(0x7F51, 0x7AD9, 0x5BC6, 0x7801)) + ".txt") ""

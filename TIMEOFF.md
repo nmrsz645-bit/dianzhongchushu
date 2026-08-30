@@ -380,3 +380,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 - `bootstrap-config.ps1` 已补齐 `选择资源id.txt` 与 `违禁词.txt` 的仅新建占位文件；不会覆盖用户已有配置。
 - 守护轮次改为先平台扫描（其内部包含失败队列重试），再执行兜底，避免长兜底延后本轮主扫描和重试；测试覆盖该顺序。
 - 兜底与平台仍不并行，原因是共用 Chrome 持久登录目录。若将来需要并发，必须先隔离浏览器 Profile 与状态写入，不能仅移除运行锁。
+- 自检改为校验飞书实际需要的 App ID、App Secret 和链接；配置引导的占位文本会明确报为未填写，不再把任意长文本误判为已配置。

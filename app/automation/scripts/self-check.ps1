@@ -95,7 +95,7 @@ function Check-ConfigFiles {
   $checks = @(
     @{ Name = $urlFile; Pattern = '^https?://'; Message = "must be a URL starting with http:// or https://" },
     @{ Name = $wechatFile; Pattern = 'qyapi\.weixin\.qq\.com.+key='; Message = "must be a WeCom webhook URL containing key=" },
-    @{ Name = $feishuFile; Pattern = '.{20,}'; Message = "must contain real Feishu API/link content" },
+    @{ Name = $feishuFile; Pattern = '(?s)(?=.*App ID\s*[:：]\s*\S+)(?=.*App Secret\s*[:：]\s*\S+)(?=.*https?://\S+).+'; Message = "must contain App ID, App Secret, and a Feishu URL" },
     @{ Name = $resourceFile; Pattern = '^\d+$'; Message = "must be numeric resource id" }
   )
   foreach ($check in $checks) {
