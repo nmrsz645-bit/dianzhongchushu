@@ -21,7 +21,7 @@ git rev-parse origin/main
 Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 ~~~
 
-交接时预期：分支为 main，工作区无输出，HEAD 与 origin/main 相同；本次交接的已验证提交为 9bd39b34bb87287dbd44f373deb3f3afd3fbd743。若任一项不符，先报告差异，不要覆盖或重置文件。
+交接时预期：分支为 main，工作区无输出，HEAD 与 origin/main 相同。不要把某一个固定提交哈希当作唯一正确值：后续交接文档提交会自然推进 main。若分支、工作区或 HEAD 与 origin/main 不符，先报告差异，不要覆盖或重置文件。
 
 ### 已完成并验证
 
