@@ -95,7 +95,7 @@ function Check-ConfigFiles {
   $checks = @(
     @{ Name = $urlFile; Pattern = '^https?://'; Message = "must be a URL starting with http:// or https://" },
     @{ Name = $wechatFile; Pattern = 'qyapi\.weixin\.qq\.com.+key='; Message = "must be a WeCom webhook URL containing key=" },
-    @{ Name = $feishuFile; Pattern = '(?s)(?=.*App ID\s*[:：]\s*\S+)(?=.*App Secret\s*[:：]\s*\S+)(?=.*https?://\S+).+'; Message = "must contain App ID, App Secret, and a Feishu URL" },
+    @{ Name = $feishuFile; Pattern = '(?s)(?=.*App ID\s*[\x3A\uFF1A]\s*\S+)(?=.*App Secret\s*[\x3A\uFF1A]\s*\S+)(?=.*https?://\S+).+'; Message = "must contain App ID, App Secret, and a Feishu URL" },
     @{ Name = $resourceFile; Pattern = '^\d+$'; Message = "must be numeric resource id" }
   )
   foreach ($check in $checks) {
@@ -106,7 +106,7 @@ function Check-ConfigFiles {
     $content = [string](Get-Content -LiteralPath $file -Raw)
     $content = $content.Trim()
     if (-not $content) { Warn "Empty config file: $name"; continue }
-    if ($content -match '请填写|示例|xxxx|\.\.\.') { Warn "Placeholder config file: $name"; continue }
+    if ($content -match '(?i)fill\s+(in|the)?|replace|xxxx|\.\.\.|\u8BF7\u586B\u5199|\u793A\u4F8B') { Warn "Placeholder config file: $name"; continue }
     if ($content -notmatch $check.Pattern) { Warn "Invalid config file: $name, $($check.Message)"; continue }
     Ok "Config file: $name"
   }

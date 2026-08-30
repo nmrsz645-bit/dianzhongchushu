@@ -381,3 +381,5 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 - 守护轮次改为先平台扫描（其内部包含失败队列重试），再执行兜底，避免长兜底延后本轮主扫描和重试；测试覆盖该顺序。
 - 兜底与平台仍不并行，原因是共用 Chrome 持久登录目录。若将来需要并发，必须先隔离浏览器 Profile 与状态写入，不能仅移除运行锁。
 - 自检改为校验飞书实际需要的 App ID、App Secret 和链接；配置引导的占位文本会明确报为未填写，不再把任意长文本误判为已配置。
+- 配置引导中兜底文件路径改为标准 Join-Path，兼容新电脑常见的 Windows PowerShell 5.1 与当前 PowerShell 7。
+- 引导与自检脚本不再依赖 UTF-8 无 BOM 文件内的中文正则或占位文本；Windows PowerShell 5.1 已实际执行配置引导，自检会正确识别占位而非误判。
