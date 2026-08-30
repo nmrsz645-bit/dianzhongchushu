@@ -374,3 +374,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 - 全新克隆已验证 `npm ci --ignore-scripts`、`npm.cmd test` 及桌面 EXE 构建均可通过；新电脑要实际运行时仍须由用户私密补齐配置并重新登录 Chrome。
 - 已添加 GitHub Actions Windows Node 测试。它只检查无凭据源码，不能替代真实 Chrome、隔离升级/回滚或公网哈希回读。
 - 正式更新发布仍依赖独立、经审计的 Windows 更新器工具链；不将共用更新器目录、其备份或二进制文件复制进本仓库。未完成正式发布验证前，不得切换线上 `latest.json` 或 `catalog.json`。
+
+## 13. 新电脑接手修正（2026-08-31）
+
+- `bootstrap-config.ps1` 已补齐 `选择资源id.txt` 与 `违禁词.txt` 的仅新建占位文件；不会覆盖用户已有配置。
+- 守护轮次改为先平台扫描（其内部包含失败队列重试），再执行兜底，避免长兜底延后本轮主扫描和重试；测试覆盖该顺序。
+- 兜底与平台仍不并行，原因是共用 Chrome 持久登录目录。若将来需要并发，必须先隔离浏览器 Profile 与状态写入，不能仅移除运行锁。

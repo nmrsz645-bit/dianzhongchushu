@@ -28,6 +28,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\scripts\self-check.ps
 
 完成本机配置和登录后，通过项目根目录 `Start.cmd` 启动。首次接手只做测试或代码检查时，不要启动自动出书和 40 分钟守护。
 
+新电脑先运行下列命令生成**仅限本机、不会覆盖已有内容**的配置占位文件，再由用户私密填写并通过自检：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\automation\scripts\bootstrap-config.ps1'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\automation\scripts\self-check.ps1'
+```
+
 ## 数据与配置
 
 所有 Chrome 登录态、API/Webhook/密码文本、兜底状态、队列、日志、输入输出和小说目录均被 `.gitignore` 排除，不会随 Git 迁移。新电脑需由用户私密配置；不要从仓库补写这些内容。

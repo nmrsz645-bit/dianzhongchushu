@@ -26,17 +26,17 @@ async function run() {
     const mode = readModeSettingsFromFile();
     log(`当前运行模式：${modeText(mode)}`);
     const now = Date.now();
+    if (mode.platformEnabled) {
+      await scanOnce();
+    } else {
+      log("平台扫描已关闭，本轮跳过平台出书");
+    }
     if (mode.fallbackEnabled && now - lastFallbackAt >= FALLBACK_INTERVAL_MS) {
       lastFallbackAt = now;
       log("开始执行1小时兜底检查");
       await runFallbackOnce();
     } else if (!mode.fallbackEnabled) {
       log("兜底链接已关闭，本轮跳过兜底出书");
-    }
-    if (mode.platformEnabled) {
-      await scanOnce();
-    } else {
-      log("平台扫描已关闭，本轮跳过平台出书");
     }
     updateStatusFields({ runtimeHealth: "正常", lastGlobalError: "" });
   } catch (error) {

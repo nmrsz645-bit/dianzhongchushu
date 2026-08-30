@@ -25,6 +25,8 @@
 - 选择资源id.txt
 - 违禁词.txt
 
+首次接手可先运行 automation\scripts\bootstrap-config.ps1 创建这些文件的本机占位内容；它不会覆盖已有配置。填写后再运行 automation\scripts\self-check.ps1，全部通过并完成 Chrome 登录后才启动自动出书。
+
 五、输出位置
 - 小说文本：本文件夹根目录
 - 可改小说：可改小说

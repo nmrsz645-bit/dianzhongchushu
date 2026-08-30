@@ -80,8 +80,30 @@ async function testRunHonorsOnlyFallbackMode() {
   }
 }
 
+async function testPlatformScanRunsBeforeFallback() {
+  clearWatchModules();
+  const events = [];
+  mockModule("logger.js", { log: (message) => events.push(message) });
+  mockModule("mode-settings.js", { modeText: () => "平台+兜底", readModeSettingsFromFile: () => ({ platformEnabled: true, fallbackEnabled: true }) });
+  mockModule("notification-utils.js", { notifyOrQueueWechat: async () => {} });
+  mockModule("scan-once.js", { scanOnce: async () => events.push("scan") });
+  mockModule("settings.js", { SCAN_INTERVAL_MS: 1000 });
+  mockModule("process-lock.js", { acquireLock: () => ({ acquired: true }), releaseLock: () => {}, watchdogLockFile: "x" });
+  const fallbackPath = require.resolve(path.join(__dirname, "..", "..", "兜底", "run-once.js"));
+  require.cache[fallbackPath] = { id: fallbackPath, filename: fallbackPath, loaded: true, exports: { runFallbackOnce: async () => events.push("fallback") } };
+
+  try {
+    const watcher = require("../src/watch-40min");
+    await watcher.run();
+    assert.deepStrictEqual(events.filter((event) => event === "scan" || event === "fallback"), ["scan", "fallback"]);
+  } finally {
+    clearWatchModules();
+  }
+}
+
 (async () => {
   await testBusyWatchdogLockExitsWithoutScanning();
   await testRunHonorsOnlyFallbackMode();
+  await testPlatformScanRunsBeforeFallback();
   console.log("watch-lock tests passed");
 })();
