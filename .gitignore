@@ -1,5 +1,7 @@
 # Local accounts, credentials, and user settings
 app/*.txt
+!app/.publish-exclude.txt
+!app/使用说明-点重自动化.txt
 app/*.json
 !app/version.json
 app/ChromeProfile/

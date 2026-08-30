@@ -31,3 +31,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\scripts\self-check.ps
 ## 数据与配置
 
 所有 Chrome 登录态、API/Webhook/密码文本、兜底状态、队列、日志、输入输出和小说目录均被 `.gitignore` 排除，不会随 Git 迁移。新电脑需由用户私密配置；不要从仓库补写这些内容。
+
+`app/.publish-exclude.txt` 和 `app/使用说明-点重自动化.txt` 属于可公开交接的发布规则与使用说明，已随源码版本控制。新增用户数据目录时，必须同步检查发布排除规则，不能让数据进入下载包。
+
+## 持续验证
+
+推送到 `main` 或提交拉取请求时，GitHub Actions 会在 Windows 环境执行 `npm ci --ignore-scripts` 和 `npm test`。它只验证源码，不使用任何本机配置、登录态或业务数据。
+
+## 正式发布边界
+
+本仓库可在新电脑复现源码检查、自动化测试和桌面 EXE 构建；它**不包含**共享的 Windows 更新器工具链。正式制作并上线更新包前，必须另行取得经过审计的更新器工具链，并完成隔离升级/回滚、SHA-256 和公网回读验证。不得仅因 Git 克隆成功就发布或切换 `latest.json`、`catalog.json`。

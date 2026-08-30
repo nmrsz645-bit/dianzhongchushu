@@ -1,0 +1,22 @@
+﻿# 用户运行数据不进入公开下载包；更新时由本地迁移保留。
+automation/logs
+automation/input
+automation/output
+automation/data
+automation/failed
+ChromeProfile
+小说原文
+可改小说
+批量书籍ID.txt
+兜底/新建文本文档.txt
+浼佷笟寰俊.txt
+缃戝潃.txt
+DeepSeek接口.txt
+网站密码.txt
+企业微信.txt
+网址.txt
+飞书接口和链接.txt
+选择资源id.txt
+自动化模式.json
+企业微信发送开关.txt
+违禁词.txt

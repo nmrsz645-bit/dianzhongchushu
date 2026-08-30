@@ -365,3 +365,12 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 - 清理后再次干跑结果为 0 个待删除目标；四个保留包 SHA-256 全部复核通过。
 
 可重复审计脚本：`C:\Users\Administrator\Documents\Codex\2026-07-14\zen\Cleanup-DianZhong-Keep-1.1.24-1.1.25.ps1`
+
+## 12. Git 源码交接与持续验证（2026-08-30）
+
+- 源码远程仓库：`https://github.com/nmrsz645-bit/dianzhongchushu.git`，默认分支 `main`。
+- 已纳入交接：源码、依赖锁文件、README、开发约定、`.env.example`、发布排除规则 `app/.publish-exclude.txt` 和本地使用说明。
+- 已明确排除：Chrome 登录态、各类密钥/账号/链接配置、小说与兜底业务数据、运行队列、日志、输出、依赖目录、历史发布包和回滚数据。
+- 全新克隆已验证 `npm ci --ignore-scripts`、`npm.cmd test` 及桌面 EXE 构建均可通过；新电脑要实际运行时仍须由用户私密补齐配置并重新登录 Chrome。
+- 已添加 GitHub Actions Windows Node 测试。它只检查无凭据源码，不能替代真实 Chrome、隔离升级/回滚或公网哈希回读。
+- 正式更新发布仍依赖独立、经审计的 Windows 更新器工具链；不将共用更新器目录、其备份或二进制文件复制进本仓库。未完成正式发布验证前，不得切换线上 `latest.json` 或 `catalog.json`。
