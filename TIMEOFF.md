@@ -1,6 +1,89 @@
 # 点重自动化交接说明
 
-更新时间：2026-08-21 03:52（北京时间）
+最新交接快照：2026-08-31（北京时间）
+
+> 新会话先只读本节。下方第 0–13 节保留历史修复、发布和清理证据；如与本节冲突，以本节为准。
+
+## 当前交接快照（新会话从这里开始）
+
+### 当前目标
+
+项目已完成跨电脑源码交接。当前工作目标是：在不覆盖用户配置、登录态、业务数据、日志或已发布 1.1.25 的前提下，让新电脑能够从 GitHub 接手开发、测试、构建和本地使用。除非用户提出新的明确需求，不要继续修改业务逻辑或重复发布 1.1.25。
+
+### 第一步：直接照做的只读确认
+
+~~~powershell
+Set-Location -LiteralPath 'E:\自动化\gengxin\dian-zhong-chu-shu'
+git fetch origin main
+git status --short
+git rev-parse HEAD
+git rev-parse origin/main
+Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
+~~~
+
+交接时预期：分支为 main，工作区无输出，HEAD 与 origin/main 相同；本次交接的已验证提交为 9bd39b34bb87287dbd44f373deb3f3afd3fbd743。若任一项不符，先报告差异，不要覆盖或重置文件。
+
+### 已完成并验证
+
+- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前应用版本 1.1.25，文件为 app\version.json。
+- Git 已纳入源码、依赖锁文件、README、AGENTS、.env.example、发布排除规则和本地使用说明；私密数据均被排除。
+- GitHub 最新 Windows Node 测试已通过：https://github.com/nmrsz645-bit/dianzhongchushu/actions/runs/33321771524。
+- 已从 GitHub 进行全新克隆并在 Windows PowerShell 5.1 验证：配置引导成功、npm ci --ignore-scripts 无依赖漏洞、npm.cmd test 19 项通过、桌面 EXE 构建成功。
+- 配置引导和自检已兼容 Windows PowerShell 5.1；飞书、企业微信和资源 ID 的占位内容会被自检明确拦截，不会误判为可运行配置。
+- 守护轮次当前顺序为“平台扫描（含失败队列重试）→ 兜底”；保留单 Chrome 登录目录的安全串行，不并行争用浏览器。
+
+### 未完成事项与外部前提
+
+这些不是源码缺陷，必须由实际使用者在新电脑私密完成，不能从 Git、聊天记录或日志伪造：
+
+1. 填写 app\企业微信.txt 的企业微信 Webhook。
+2. 填写 app\飞书接口和链接.txt 的飞书 App ID、App Secret 和表格链接。
+3. 填写 app\选择资源id.txt 的数字资源 ID。
+4. 运行登录入口，在新电脑的 app\ChromeProfile\ 完成后台登录。
+
+在上述四项完成前，self-check.ps1 预期报 4 项未完成；不得为了让自检通过而提交、硬编码或伪造这些内容。
+
+正式上线新的在线更新包还需要独立、经审计的 Windows 更新器工具链，以及隔离升级/回滚、SHA-256 和公网回读验证。仅 Git 克隆成功不能发布，也不能切换 latest.json 或 catalog.json。
+
+### 新电脑可直接执行的接手流程
+
+~~~powershell
+git clone https://github.com/nmrsz645-bit/dianzhongchushu.git
+Set-Location -LiteralPath '.\dianzhongchushu'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\automation\scripts\bootstrap-config.ps1'
+Set-Location -LiteralPath '.\app\automation'
+npm.cmd ci --ignore-scripts
+npm.cmd test
+~~~
+
+随后由用户私密填写上述四项、运行 self-check.ps1、完成 Chrome 登录。桌面构建命令为：
+
+~~~powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\desktop\build-desktop.ps1'
+~~~
+
+### 关键文件与路径
+
+- 项目根目录：E:\自动化\gengxin\dian-zhong-chu-shu
+- 自动化源码：app\automation\src\
+- 自动化测试：app\automation\test\
+- 兜底源码：app\兜底\run-once.js
+- 配置引导：app\automation\scripts\bootstrap-config.ps1
+- 自检：app\automation\scripts\self-check.ps1
+- 桌面构建：app\desktop\build-desktop.ps1
+- 发布数据排除规则：app\.publish-exclude.txt
+- 使用说明：app\使用说明-点重自动化.txt
+- 开发约定：AGENTS.md；快速说明：README.md
+
+### 已知问题与安全边界
+
+- 兜底与平台任务仍使用同一个 Chrome 持久登录目录，故必须串行；极长兜底可推迟下一轮计划任务。不要只移除运行锁来并行化，否则会产生浏览器和状态文件竞争。
+- GitHub Actions 只验证无凭据 Node 测试，不等于真实 Chrome、平台、飞书或企业微信端到端验证。
+- 详尽的不可误动清单在第 9 节：尤其是 app\ChromeProfile\、根目录私密 TXT/JSON、app\automation\data\、logs\、input\、output\、failed\、小说目录、兜底状态、app.previous\ 和历史发布/回滚材料。任何修复、打包或发布均不得清空、覆盖、重命名或提交它们。
+
+---
+
+以下为保留的历史发布、修复与审计记录。它们用于追溯证据，不是当前会话的操作顺序。
 
 ## 0. 本次续作结论（2026-08-21 03:52）
 
@@ -58,6 +141,8 @@
 本次续作已完成源码修复、本地/隔离验证、版本递增和正式发布。
 
 ## 2. 当前权威源码与版本
+
+> 历史说明：本节中的“非 Git 仓库”等表述只反映 2026-08-21。当下 Git、版本和下一步操作以置顶“当前交接快照”为准。
 
 - 项目根目录：`E:\自动化\gengxin\dian-zhong-chu-shu`
 - 当前应用源码：`E:\自动化\gengxin\dian-zhong-chu-shu\app`
@@ -211,7 +296,7 @@ npm.cmd test
 
 更新任务会话 `019fdfd3-80e4-7622-9be9-7867bad946a5` 已收到版本、哈希、下载地址和验证结果；不要在该会话重复发布。
 
-## 6. 下一步
+## 6. 历史下一步（已由置顶“当前交接快照”覆盖）
 
 本次发布工作已完成。下一次续作只需：
 
@@ -269,6 +354,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 
 ### 中优先级：兜底可能延迟平台扫描和主重试
 
+> 以下为 2026-08-21 的历史状态。当前已改为先平台扫描（含失败队列重试）、再执行兜底；仍因共用 Chrome 登录目录而保持串行。
+
 文件：`app\automation\src\watch-40min.js`
 
 - 兜底先运行，再运行平台扫描。
@@ -285,7 +372,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'E:\自动化\gengxin\di
 
 `windows-updater-source\build.ps1 -Test All` 中独立的 `HunJianUpdaterRepair` 测试仍硬编码历史修复载荷哈希，与当前 `bin\UpdateAgent.exe` 不一致，因此该单项会在进入正式 EXE 编译前失败。本次点重完整包不包含该修复器，也未修改它；与本次发布相关的 Core、Transaction、Agent 测试均单独通过，正式 `1.1.24`→`1.1.25` UpdateAgent 升级和回滚也已通过。后续若重新发布旧损坏版本修复器，应单独更新其载荷、预期哈希和测试，不能把当前 Agent 随意替换进去。
 
-### 无 Git 保护
+### 历史：当时无 Git 保护（已于 2026-08-30 修正）
+
+> 当前源码已在 GitHub main 分支；恢复或续作前仍必须先核对置顶快照中的 Git 状态。
 
 权威目录不是 Git 仓库。每次改动前要记录文件哈希或在项目外建立隔离副本；不要把 `.bak`、测试数据或用户配置留在将来会被打包的 `app` 内。
 
