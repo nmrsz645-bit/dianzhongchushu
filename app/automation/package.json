@@ -1,0 +1,15 @@
+{
+  "name": "dianzhong-local-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "open-login": "node src/open-login.js",
+    "scan-once": "node src/scan-once.js",
+    "watch-40min": "node src/watch-40min.js",
+    "test": "node test/text-utils.test.js && node test/ai-tags.test.js && node test/feishu-utils.test.js && node test/platform-utils.test.js && node test/state.test.js && node test/logger.test.js && node test/settings.test.js && node test/status-utils.test.js && node test/wechat-send-setting.test.js && node test/fallback-failure.test.js && node test/mode-settings.test.js && node test/process-lock.test.js && node test/watch-lock.test.js && node test/browser-errors.test.js && node test/safe-append.test.js && node test/pending-feishu.test.js && node test/scan-failure-classification.test.js && node ../兜底/test-fallback-utils.js && node test/run-book-order.test.js"
+  },
+  "dependencies": {
+    "playwright-core": "^1.61.1"
+  }
+}

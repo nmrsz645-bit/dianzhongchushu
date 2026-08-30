@@ -1,0 +1,29 @@
+# Local accounts, credentials, and user settings
+app/*.txt
+app/*.json
+!app/version.json
+app/ChromeProfile/
+app/小说原文/
+app/可改小说/
+app/兜底/兜底状态.json
+app/兜底/兜底日志.txt
+app/兜底/新建文本文档.txt
+
+# Runtime and generated user data
+app/runtime/
+app/automation/node_modules/
+app/automation/data/
+app/automation/logs/
+app/automation/input/
+app/automation/output/
+app/automation/failed/
+app/automation/.retry.json
+app/automation/*.lock
+app/DianzhongDesktop.exe
+
+# Local machine and report artefacts
+*.log
+*.tmp
+*.bak
+*.zip
+app.previous/
