@@ -8,7 +8,7 @@
 
 ### 当前目标
 
-项目已完成跨电脑源码交接。当前待发布源码版本为 1.1.26：新增阿里云百炼 AI 标签模型手动选择（默认 deepseek-v4-flash-0731，可选 qwen3.8-flash），并在兼容接口请求中强制关闭思考。线上已发布版本仍为 1.1.25。在不覆盖用户配置、登录态、业务数据或日志的前提下，允许完成 1.1.26 的测试、构建和发布验收；不得重复发布 1.1.25 或自行扩展业务逻辑。
+项目已完成跨电脑源码交接和 1.1.26 正式发布。该版本新增阿里云百炼 AI 标签模型手动选择（默认 deepseek-v4-flash-0731，可选 qwen3.8-flash），并在兼容接口请求中强制关闭思考。线上更新入口、完整包和下载站均已指向 1.1.26。后续改动必须递增版本并重新完成测试、构建、隔离升级/回滚、SHA-256 与公网回读；不得覆盖用户配置、登录态、业务数据或日志，也不得自行扩展业务逻辑。
 
 ### 第一步：直接照做的只读确认
 
@@ -25,19 +25,23 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 ### 已完成并验证
 
-- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前待发布应用版本 1.1.26，文件为 app\version.json；线上已发布版本为 1.1.25。
+- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前应用与线上发布版本均为 1.1.26，文件为 app\version.json。
 - Git 已纳入源码、依赖锁文件、README、AGENTS、.env.example、发布排除规则和本地使用说明；私密数据均被排除。
 - GitHub 最新 Windows Node 测试已通过：https://github.com/nmrsz645-bit/dianzhongchushu/actions/runs/33321771524。
 - 已从 GitHub 进行全新克隆并在 Windows PowerShell 5.1 验证：配置引导成功、npm ci --ignore-scripts 无依赖漏洞、npm.cmd test 19 项通过、桌面 EXE 构建成功。
 - 配置引导和自检已兼容 Windows PowerShell 5.1；飞书、企业微信和资源 ID 的占位内容会被自检明确拦截，不会误判为可运行配置。
 - 守护轮次当前顺序为“平台扫描（含失败队列重试）→ 兜底”；保留单 Chrome 登录目录的安全串行，不并行争用浏览器。
 
-### 本次待发布：1.1.26
+### 本次发布：1.1.26（已完成）
 
 - AI 标签的阿里云百炼 OpenAI 兼容接口支持手动选择 `deepseek-v4-flash-0731`（默认）和 `qwen3.8-flash`。
 - 兼容接口请求会在顶层传入 `enable_thinking: false`，并将基础兼容地址规范到 `/chat/completions`。
 - 已完成本地 `npm.cmd test`（19 组通过）和桌面 EXE 构建；两模型最小真实请求均返回 HTTP 200，未返回 reasoning_content，reasoning token 为 0。
-- 发布负责人只能构建、推送、上架和验收；不得修改本次源码、私密配置或用户数据。发布前必须完成候选包数据排除审计、隔离升级/回滚、SHA-256、下载和公网回读；仅在得到用户明确授权后才切换 `latest.json`、`catalog.json`。
+- 候选包数据排除审计通过：`app.zip` 187 个应用文件，完整包 191 个条目，受保护条目为 0。未读取、打包或上传私密配置、Chrome 登录态、业务数据或日志。
+- 已在短路径隔离目录用真实 UpdateAgent 走完 `1.1.25 → 1.1.26 → 1.1.25` 升级与 `RollbackApp()`；9 类新建测试保护项的哈希变化为 0。极长嵌套路径会触发 Windows 路径长度限制，安装/验证路径应保持简短。
+- 公网 HTTPS 回读通过：主更新入口和安全更新入口均为 1.1.26；根与 downloads 的 `catalog.json` 均指向该版本完整包；下载站已实际渲染“点钟出书 v1.1.26”。
+- `app.zip` SHA-256：`EA8F6A3C55CBA59FBE4FD33E74F6C3DF24B3EEF932C3DE91A6FD97E5606210F1`；完整包 SHA-256：`37FB9A9B1B10D4D1C02B886E86226146C6EA122877AF8BBA8DFBEFA61B5BA6D`。
+- 更新入口：https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/updates/dian-zhong-chu-shu/latest.json；完整包：https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/dian-zhong-chu-shu-1.1.26.zip；下载站：https://download.luotuoqiluotuozhaoma.com/。
 
 ### 未完成事项与外部前提
 
@@ -50,7 +54,7 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 在上述四项完成前，self-check.ps1 预期报 4 项未完成；不得为了让自检通过而提交、硬编码或伪造这些内容。
 
-正式上线新的在线更新包还需要独立、经审计的 Windows 更新器工具链，以及隔离升级/回滚、SHA-256 和公网回读验证。仅 Git 克隆成功不能发布，也不能切换 latest.json 或 catalog.json。
+1.1.26 已使用独立 Windows 更新器完成隔离升级/回滚、SHA-256 和公网回读后发布。仅 Git 克隆成功仍不构成后续版本的发布条件。
 
 ### 新电脑可直接执行的接手流程
 
