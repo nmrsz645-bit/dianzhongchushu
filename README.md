@@ -1,6 +1,6 @@
 # 点重出书
 
-Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前源码/线上版本为 `1.1.25`。
+Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前待发布源码版本为 `1.1.26`；线上已发布版本仍为 `1.1.25`。
 
 ## 接手前先读
 
@@ -23,6 +23,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\scripts\self-check.ps
 ```
 
 `self-check.ps1` 会读取本机配置，缺少配置时可能报失败；不得为了通过检查写入真实密钥或覆盖用户数据。
+
+AI 标签可在桌面程序的“配置中心 → AI”中手动选择 `deepseek-v4-flash-0731`（默认）或 `qwen3.8-flash`。使用阿里云百炼 OpenAI 兼容地址时，程序会在每次请求中强制传入 `enable_thinking: false`；API Key 仅保存在本机的 `app\DeepSeek接口.txt`，不要提交或发送到聊天中。
 
 ## 启动
 

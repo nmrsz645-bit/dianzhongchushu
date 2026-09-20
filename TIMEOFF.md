@@ -8,7 +8,7 @@
 
 ### 当前目标
 
-项目已完成跨电脑源码交接。当前工作目标是：在不覆盖用户配置、登录态、业务数据、日志或已发布 1.1.25 的前提下，让新电脑能够从 GitHub 接手开发、测试、构建和本地使用。除非用户提出新的明确需求，不要继续修改业务逻辑或重复发布 1.1.25。
+项目已完成跨电脑源码交接。当前待发布源码版本为 1.1.26：新增阿里云百炼 AI 标签模型手动选择（默认 deepseek-v4-flash-0731，可选 qwen3.8-flash），并在兼容接口请求中强制关闭思考。线上已发布版本仍为 1.1.25。在不覆盖用户配置、登录态、业务数据或日志的前提下，允许完成 1.1.26 的测试、构建和发布验收；不得重复发布 1.1.25 或自行扩展业务逻辑。
 
 ### 第一步：直接照做的只读确认
 
@@ -25,12 +25,19 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 ### 已完成并验证
 
-- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前应用版本 1.1.25，文件为 app\version.json。
+- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前待发布应用版本 1.1.26，文件为 app\version.json；线上已发布版本为 1.1.25。
 - Git 已纳入源码、依赖锁文件、README、AGENTS、.env.example、发布排除规则和本地使用说明；私密数据均被排除。
 - GitHub 最新 Windows Node 测试已通过：https://github.com/nmrsz645-bit/dianzhongchushu/actions/runs/33321771524。
 - 已从 GitHub 进行全新克隆并在 Windows PowerShell 5.1 验证：配置引导成功、npm ci --ignore-scripts 无依赖漏洞、npm.cmd test 19 项通过、桌面 EXE 构建成功。
 - 配置引导和自检已兼容 Windows PowerShell 5.1；飞书、企业微信和资源 ID 的占位内容会被自检明确拦截，不会误判为可运行配置。
 - 守护轮次当前顺序为“平台扫描（含失败队列重试）→ 兜底”；保留单 Chrome 登录目录的安全串行，不并行争用浏览器。
+
+### 本次待发布：1.1.26
+
+- AI 标签的阿里云百炼 OpenAI 兼容接口支持手动选择 `deepseek-v4-flash-0731`（默认）和 `qwen3.8-flash`。
+- 兼容接口请求会在顶层传入 `enable_thinking: false`，并将基础兼容地址规范到 `/chat/completions`。
+- 已完成本地 `npm.cmd test`（19 组通过）和桌面 EXE 构建；两模型最小真实请求均返回 HTTP 200，未返回 reasoning_content，reasoning token 为 0。
+- 发布负责人只能构建、推送、上架和验收；不得修改本次源码、私密配置或用户数据。发布前必须完成候选包数据排除审计、隔离升级/回滚、SHA-256、下载和公网回读；仅在得到用户明确授权后才切换 `latest.json`、`catalog.json`。
 
 ### 未完成事项与外部前提
 

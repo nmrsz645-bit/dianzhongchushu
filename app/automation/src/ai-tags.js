@@ -71,6 +71,40 @@ function isDashScopeEndpoint(endpoint) {
   }
 }
 
+function isDashScopeOpenAICompatibleEndpoint(endpoint) {
+  try {
+    const target = new URL(endpoint || DEFAULT_ENDPOINT);
+    return /(?:maas|dashscope)\.aliyuncs\.com$/i.test(target.hostname) && /\/compatible-mode\/v1(?:\/chat\/completions)?\/?$/.test(target.pathname);
+  } catch {
+    return false;
+  }
+}
+
+function getOpenAIChatCompletionsUrl(endpoint) {
+  const target = new URL(endpoint || DEFAULT_ENDPOINT);
+  target.pathname = target.pathname.replace(/\/+$/, "");
+  if (/\/compatible-mode\/v1$/i.test(target.pathname)) target.pathname += "/chat/completions";
+  return target;
+}
+
+function buildOpenAIChatBody(config, prompt) {
+  const body = {
+    model: config.model || DEFAULT_MODEL,
+    messages: [
+      {
+        role: "system",
+        content: "\u4f60\u53ea\u8f93\u51fa\u8bdd\u9898\uff0c\u4e0d\u8f93\u51fa\u89e3\u91ca\u3002",
+      },
+      { role: "user", content: prompt },
+    ],
+    temperature: 0.8,
+    max_tokens: 120,
+  };
+  // Aliyun Model Studio's OpenAI-compatible API expects this extension at the request-body top level.
+  if (isDashScopeOpenAICompatibleEndpoint(config.endpoint)) body.enable_thinking = false;
+  return body;
+}
+
 function normalizeTopic(raw) {
   const cleaned = String(raw || "")
     .trim()
@@ -142,19 +176,8 @@ function buildAiTagPrompt(bookName, description, novelText, forbiddenWords = [])
 
 function requestDeepSeekLabels(config, prompt) {
   return new Promise((resolve, reject) => {
-    const target = new URL(config.endpoint || DEFAULT_ENDPOINT);
-    const body = JSON.stringify({
-      model: config.model || DEFAULT_MODEL,
-      messages: [
-        {
-          role: "system",
-          content: "\u4f60\u53ea\u8f93\u51fa\u8bdd\u9898\uff0c\u4e0d\u8f93\u51fa\u89e3\u91ca\u3002",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.8,
-      max_tokens: 120,
-    });
+    const target = getOpenAIChatCompletionsUrl(config.endpoint);
+    const body = JSON.stringify(buildOpenAIChatBody(config, prompt));
 
     const req = https.request(
       {
@@ -276,6 +299,9 @@ module.exports = {
   cleanAiLabels,
   parseDeepSeekConfig,
   isDashScopeEndpoint,
+  isDashScopeOpenAICompatibleEndpoint,
+  getOpenAIChatCompletionsUrl,
+  buildOpenAIChatBody,
   requestDashScopeLabels,
   requestDeepSeekLabels,
   selectLabelsWithFallback,

@@ -36,6 +36,8 @@ internal sealed class MainForm : Form
     private readonly TextBox todayCountsBox = NewInfoBox();
     private readonly TextBox fallbackBox = NewInfoBox();
     private readonly Timer timer = new Timer { Interval = 5000 };
+    private const string DefaultAliyunChatEndpoint = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+    private const string DefaultAliyunModel = "deepseek-v4-flash-0731";
 
     public MainForm()
     {
@@ -316,11 +318,14 @@ internal sealed class MainForm : Form
             wechatPage.Controls.Add(wechatEnabled, 1, 2);
             tabs.TabPages.Add(NewTab("\u4f01\u4e1a\u5fae\u4fe1", wechatPage));
 
-            var aiEnabled = new CheckBox { Text = "\u542f\u7528 AI \u6807\u7b7e", AutoSize = true, Checked = IsEnabledConfig(ReadConfigValue(aiText, "Enable")) };
+            var configuredEnabled = ReadConfigValue(aiText, "Enable");
+            if (String.IsNullOrWhiteSpace(configuredEnabled)) configuredEnabled = ReadConfigValue(aiText, "Enabled");
+            var aiEnabled = new CheckBox { Text = "\u542f\u7528 AI \u6807\u7b7e", AutoSize = true, Checked = IsEnabledConfig(configuredEnabled) };
             var aiKeyBox = NewConfigBox(ReadConfigValue(aiText, "API Key"), true);
             var configuredModel = ReadConfigValue(aiText, "Model");
-            var aiModelBox = NewConfigBox(String.IsNullOrWhiteSpace(configuredModel) ? "deepseek-v4-flash" : configuredModel);
-            var aiEndpointBox = NewConfigBox(ReadConfigValue(aiText, "Endpoint"));
+            var aiModelBox = NewAiModelSelector(configuredModel);
+            var configuredEndpoint = ReadConfigValue(aiText, "Endpoint");
+            var aiEndpointBox = NewConfigBox(String.IsNullOrWhiteSpace(configuredEndpoint) ? DefaultAliyunChatEndpoint : configuredEndpoint);
             var aiPage = NewConfigPage();
             aiEnabled.Margin = new Padding(150, 8, 8, 8);
             aiPage.Controls.Add(aiEnabled, 1, 0);
@@ -328,7 +333,7 @@ internal sealed class MainForm : Form
             AddConfigRow(aiPage, 2, "\u6a21\u578b", aiModelBox);
             AddConfigRow(aiPage, 3, "\u63a5\u53e3\u5730\u5740", aiEndpointBox);
             AddSecretToggle(aiPage, 4, aiKeyBox, "\u663e\u793a API Key");
-            var thinking = new Label { Text = "\u6df1\u5ea6\u601d\u8003\uff1a\u7a0b\u5e8f\u4f1a\u81ea\u52a8\u5173\u95ed", AutoSize = true, ForeColor = Color.DimGray, Margin = new Padding(150, 8, 8, 8) };
+            var thinking = new Label { Text = "\u767e\u70bc\u6df1\u5ea6\u601d\u8003\uff1a\u7a0b\u5e8f\u5df2\u5f3a\u5236\u5173\u95ed", AutoSize = true, ForeColor = Color.DimGray, Margin = new Padding(150, 8, 8, 8) };
             aiPage.Controls.Add(thinking, 1, 5);
             tabs.TabPages.Add(NewTab("AI", aiPage));
 
@@ -355,7 +360,7 @@ internal sealed class MainForm : Form
                 WriteUserConfig(feishuFile, "App ID: " + appIdBox.Text.Trim() + "\r\nApp Secret: " + appSecretBox.Text.Trim() + "\r\n\u51fa\u4e66\u8868\u683c\u94fe\u63a5: " + feishuLinkBox.Text.Trim() + "\r\n");
                 WriteUserConfig(wechatFile, wechatBox.Text.Trim());
                 WriteUserConfig(wechatSwitchFile, wechatEnabled.Checked ? "on" : "off");
-                WriteUserConfig(aiFile, "Enable: " + (aiEnabled.Checked ? "yes" : "no") + "\r\nAPI Key: " + aiKeyBox.Text.Trim() + "\r\nModel: " + aiModelBox.Text.Trim() + "\r\nEndpoint: " + aiEndpointBox.Text.Trim() + "\r\n");
+                WriteUserConfig(aiFile, "Enable: " + (aiEnabled.Checked ? "yes" : "no") + "\r\nAPI Key: " + aiKeyBox.Text.Trim() + "\r\nModel: " + Convert.ToString(aiModelBox.SelectedItem ?? DefaultAliyunModel).Trim() + "\r\nEndpoint: " + aiEndpointBox.Text.Trim() + "\r\n");
                 WriteUserConfig(Path.Combine("\u515c\u5e95", "\u65b0\u5efa\u6587\u672c\u6587\u6863.txt"), fallbackLinksBox.Text.Trim());
                 WriteUserConfig(forbiddenFile, forbiddenBox.Text.Trim());
                 WriteUserConfig(complianceFile, complianceBox.Text.Trim());
@@ -380,6 +385,17 @@ internal sealed class MainForm : Form
     private static TextBox NewConfigBox(string text, bool secret = false, bool multiline = false)
     {
         return new TextBox { Text = text ?? "", Dock = DockStyle.Top, Multiline = multiline, Height = multiline ? 120 : 28, ScrollBars = multiline ? ScrollBars.Vertical : ScrollBars.None, UseSystemPasswordChar = secret };
+    }
+
+    private static ComboBox NewAiModelSelector(string configuredModel)
+    {
+        var selected = String.IsNullOrWhiteSpace(configuredModel) ? DefaultAliyunModel : configuredModel.Trim();
+        var selector = new ComboBox { Dock = DockStyle.Top, DropDownStyle = ComboBoxStyle.DropDownList, Height = 28 };
+        selector.Items.Add(DefaultAliyunModel);
+        selector.Items.Add("qwen3.8-flash");
+        if (!String.Equals(selected, DefaultAliyunModel, StringComparison.OrdinalIgnoreCase) && !String.Equals(selected, "qwen3.8-flash", StringComparison.OrdinalIgnoreCase)) selector.Items.Add(selected);
+        selector.SelectedItem = selected;
+        return selector;
     }
 
     private static void AddConfigRow(TableLayoutPanel page, int row, string labelText, Control control)

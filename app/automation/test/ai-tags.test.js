@@ -1,8 +1,11 @@
 const assert = require("assert");
 const {
   buildAiTagPrompt,
+  buildOpenAIChatBody,
+  getOpenAIChatCompletionsUrl,
   cleanAiLabels,
   isDashScopeEndpoint,
+  isDashScopeOpenAICompatibleEndpoint,
   parseDeepSeekConfig,
   selectLabelsWithFallback,
 } = require("../src/ai-tags");
@@ -36,6 +39,19 @@ function testParseDeepSeekConfigRecognizesAliyunDashScope() {
   const config = parseDeepSeekConfig("Enable: yes\nAPI Key: sk_test\nEndpoint: https://workspace.cn-beijing.maas.aliyuncs.com/api/v1");
   assert.strictEqual(config.model, "deepseek-v3");
   assert.strictEqual(isDashScopeEndpoint(config.endpoint), true);
+}
+
+function testAliyunOpenAICompatibleRequestDisablesThinking() {
+  const endpoint = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+  assert.strictEqual(isDashScopeOpenAICompatibleEndpoint(endpoint), true);
+  assert.strictEqual(isDashScopeEndpoint(endpoint), false);
+  assert.strictEqual(getOpenAIChatCompletionsUrl(endpoint).toString(), endpoint + "/chat/completions");
+
+  for (const model of ["deepseek-v4-flash-0731", "qwen3.8-flash"]) {
+    const body = buildOpenAIChatBody({ model, endpoint }, "generate labels");
+    assert.strictEqual(body.model, model);
+    assert.strictEqual(body.enable_thinking, false);
+  }
 }
 
 function testCleanAiLabelsFiltersForbiddenAndNormalizesHash() {
@@ -132,6 +148,7 @@ async function testSelectLabelsWithFallbackUsesLocalWhenAiFails() {
   testParseDeepSeekConfig();
   testParseDeepSeekConfigSupportsEnglishTemplate();
   testParseDeepSeekConfigRecognizesAliyunDashScope();
+  testAliyunOpenAICompatibleRequestDisablesThinking();
   testCleanAiLabelsFiltersForbiddenAndNormalizesHash();
   testCleanAiLabelsKeepsShortStoryTagsAndHotTopic();
   testBuildAiTagPromptIncludesRules();
