@@ -39,7 +39,7 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 - 已完成本地 `npm.cmd test`（19 组通过）和桌面 EXE 构建；两模型最小真实请求均返回 HTTP 200，未返回 reasoning_content，reasoning token 为 0。
 - 候选包数据排除审计通过：`app.zip` 187 个应用文件，完整包 191 个条目，受保护条目为 0。未读取、打包或上传私密配置、Chrome 登录态、业务数据或日志。
 - 已在短路径隔离目录用真实 UpdateAgent 走完 `1.1.25 → 1.1.26 → 1.1.25` 升级与 `RollbackApp()`；9 类新建测试保护项的哈希变化为 0。极长嵌套路径会触发 Windows 路径长度限制，安装/验证路径应保持简短。
-- 公网 HTTPS 回读通过：主更新入口和安全更新入口均为 1.1.26；根与 downloads 的 `catalog.json` 均指向该版本完整包；下载站已实际渲染“点钟出书 v1.1.26”。
+- 公网 HTTPS 回读通过：主更新入口和安全更新入口均为 1.1.26；根与 downloads 的 `catalog.json` 均指向该版本完整包；下载站已实际渲染 v1.1.26 完整包入口。
 - `app.zip` SHA-256：`EA8F6A3C55CBA59FBE4FD33E74F6C3DF24B3EEF932C3DE91A6FD97E5606210F1`；完整包 SHA-256：`37FB9A9B1B10D4D1C02B886E86226146C6EA122877AF8BBA8DFBEFA61B5BA6D`。
 - 更新入口：https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/updates/dian-zhong-chu-shu/latest.json；完整包：https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/dian-zhong-chu-shu-1.1.26.zip；下载站：https://download.luotuoqiluotuozhaoma.com/。
 
