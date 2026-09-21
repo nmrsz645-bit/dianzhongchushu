@@ -8,7 +8,7 @@
 
 ### 当前目标
 
-项目已完成跨电脑源码交接和 1.1.26 正式发布。该版本新增阿里云百炼 AI 标签模型手动选择（默认 deepseek-v4-flash-0731，可选 qwen3.8-flash），并在兼容接口请求中强制关闭思考。线上更新入口、完整包和下载站均已指向 1.1.26。后续改动必须递增版本并重新完成测试、构建、隔离升级/回滚、SHA-256 与公网回读；不得覆盖用户配置、登录态、业务数据或日志，也不得自行扩展业务逻辑。
+线上已发布版本为 1.1.26；当前隔离源码分支为待发布修复候选 1.1.27。1.1.26 的桌面程序会要求内置 `runtime\node\node.exe`，但原构建流程没有把它加入完整桌面包；在未安装系统 Node.js 的电脑上会提示“内置 Node 运行时缺失”。本候选只修复构建/发布完整性，不改自动出书、守护或业务逻辑：构建会下载并 SHA-256 校验官方 Node.js 24.19.0 x64，再写入 `app\runtime\node\node.exe`；更新器也将该文件列为必需。尚未通知更新会话、提交、推送、制包或发布。
 
 ### 第一步：直接照做的只读确认
 
@@ -25,14 +25,29 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 ### 已完成并验证
 
-- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，分支 main；当前应用与线上发布版本均为 1.1.26，文件为 app\version.json。
+- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，已发布分支为 main 的 1.1.26；当前修复在隔离分支 `codex/runtime-node-bundle`，`app\version.json` 为 1.1.27，尚未进入 main。
 - Git 已纳入源码、依赖锁文件、README、AGENTS、.env.example、发布排除规则和本地使用说明；私密数据均被排除。
 - GitHub 最新 Windows Node 测试已通过：https://github.com/nmrsz645-bit/dianzhongchushu/actions/runs/33321771524。
 - 已从 GitHub 进行全新克隆并在 Windows PowerShell 5.1 验证：配置引导成功、npm ci --ignore-scripts 无依赖漏洞、npm.cmd test 19 项通过、桌面 EXE 构建成功。
 - 配置引导和自检已兼容 Windows PowerShell 5.1；飞书、企业微信和资源 ID 的占位内容会被自检明确拦截，不会误判为可运行配置。
 - 守护轮次当前顺序为“平台扫描（含失败队列重试）→ 兜底”；保留单 Chrome 登录目录的安全串行，不并行争用浏览器。
 
-### 本次发布：1.1.26（已完成）
+### 当前修复候选：1.1.27（仅本地源码，未发布）
+
+- `app\desktop\build-desktop.ps1` 首次构建从 `https://nodejs.org/dist/v24.19.0/win-x64/node.exe` 下载官方 x64 运行时，校验 SHA-256 `3602F2BB1A10F2CBAB4C36886218A33C1AB3DB87290E73B033C46C77147D0237` 后复制到 `app\runtime\node\node.exe`；缓存命中时仍会校验。
+- `app\desktop\test-bundled-runtime.ps1` 实际运行桌面构建，断言内置 Node 存在、可执行且为 Node 24，并确认更新器 `requiredFiles` 包含该路径。旧构建已按预期失败，新构建本地通过并输出 `v24.19.0`。
+- `app\scripts\run-automation.cmd` 让“运行一次”“打开登录页面”“一键基准”和“处理单本书”统一优先使用包内 Node，只有完整包缺失时才回退系统 Node。`app\desktop\test-desktop-launchers.ps1` 在 PATH 不含 Node 的条件下实际调用该入口并通过；未调用任何业务脚本。
+- `app\automation\scripts\watchdog.ps1` 通过独立解析脚本选择 Node，并同样优先包内运行时。`app\desktop\test-watchdog-runtime.ps1` 验证即使 `DZ_NODE_PATH` 指向另一份 Node，守护入口仍解析为包内运行时；未启动守护循环。
+- `updater\updater-config.json` 已把 `runtime\node\node.exe` 加入 `requiredFiles`。`app\.publish-exclude.txt` 不排除 `runtime`，因此后续候选包必须实际包含该文件。
+- 尚未做完整包审计、隔离升级/回滚、SHA-256 公网回读或下载站验证；不得将本地构建结论写成已发布。
+
+### 下一步（须由用户明确授权更新/发布后执行）
+
+1. 将本隔离分支的源码审核、合并并推送到 main；不要带入 `app\runtime\`、`node_modules`、桌面 EXE、配置、Chrome 登录态或任何业务数据。
+2. 从合并后的干净源码重新构建，审计候选完整包实际含有 `runtime\node\node.exe`，且仍排除用户数据和凭据。
+3. 完成隔离升级/回滚、包 SHA-256、更新入口和下载站公网回读，最后才发布 1.1.27。
+
+### 上次发布：1.1.26（已完成）
 
 - AI 标签的阿里云百炼 OpenAI 兼容接口支持手动选择 `deepseek-v4-flash-0731`（默认）和 `qwen3.8-flash`。
 - 兼容接口请求会在顶层传入 `enable_thinking: false`，并将基础兼容地址规范到 `/chat/completions`。

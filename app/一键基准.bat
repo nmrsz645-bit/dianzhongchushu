@@ -1,5 +1,4 @@
 @echo off
 chcp 65001 >nul
-cd /d "%~dp0automation"
-node src\baseline-now.js
+call "%~dp0scripts\run-automation.cmd" "src\baseline-now.js"
 pause

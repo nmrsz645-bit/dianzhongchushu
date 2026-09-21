@@ -1,6 +1,6 @@
 # 点重出书
 
-Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前待发布源码版本为 `1.1.26`；线上已发布版本仍为 `1.1.25`。
+Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前待发布源码版本为 `1.1.27`；线上已发布版本为 `1.1.26`。
 
 ## 接手前先读
 
@@ -12,7 +12,7 @@ Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息
 
 - Windows 10/11、Google Chrome、Node.js 24 或兼容版本。
 - 在 `app/automation` 执行 `npm ci` 安装依赖。
-- 桌面程序可在 `app/desktop` 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File build-desktop.ps1` 构建。
+- 桌面程序可在 `app/desktop` 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File build-desktop.ps1` 构建。首次构建会下载、SHA-256 校验并内置官方 Node.js 24.19.0 x64 运行时；完整桌面包无需另装 Node.js，桌面界面、守护和公开的 BAT 启动入口都会优先使用该运行时。
 
 ## 验证
 

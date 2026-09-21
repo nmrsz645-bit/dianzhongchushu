@@ -5,8 +5,9 @@ $RootDir = Resolve-Path (Join-Path $AutomationDir "..")
 $LogDir = Join-Path $AutomationDir "logs"
 $DataDir = Join-Path $AutomationDir "data"
 $WatchdogPsLock = Join-Path $DataDir "watchdog-ps.lock"
-$BundledNode = Join-Path $RootDir "runtime\node\node.exe"
-$NodeExecutable = if ($env:DZ_NODE_PATH -and (Test-Path -LiteralPath $env:DZ_NODE_PATH)) { $env:DZ_NODE_PATH } elseif (Test-Path -LiteralPath $BundledNode) { $BundledNode } else { "node.exe" }
+$NodeResolver = Join-Path $PSScriptRoot "resolve-node-runtime.ps1"
+$NodeExecutable = & $NodeResolver -RootDir $RootDir
+if ($LASTEXITCODE -ne 0 -or -not $NodeExecutable) { throw "Node.js runtime resolution failed." }
 $RestartDelaySeconds = 10
 
 function Ensure-Dir($Path) {
