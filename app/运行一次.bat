@@ -1,4 +1,3 @@
 @echo off
-cd /d "%~dp0automation"
-node src\scan-once.js
+call "%~dp0scripts\run-automation.cmd" "src\scan-once.js"
 pause

@@ -11,13 +11,6 @@ if not exist "automation\src\run-book.js" (
   exit /b 1
 )
 
-where node >nul 2>nul
-if errorlevel 1 (
-  echo ERROR: Node.js not found. Run self-check or install dependencies first.
-  pause
-  exit /b 1
-)
-
 set "BOOK_ID="
 echo.
 set /p BOOK_ID=Input book ID:
@@ -27,8 +20,7 @@ if "%BOOK_ID%"=="" (
   exit /b 1
 )
 
-cd /d "%~dp0automation"
-node src\run-book.js "%BOOK_ID%"
+call "%~dp0scripts\run-automation.cmd" "src\run-book.js" "%BOOK_ID%"
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.
 echo Finished. Exit code: %EXIT_CODE%
