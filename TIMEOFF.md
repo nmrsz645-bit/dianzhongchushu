@@ -1,6 +1,6 @@
 # 点重自动化交接说明
 
-最新交接快照：2026-08-31（北京时间）
+最新交接快照：2026-09-22（北京时间）
 
 > 新会话先只读本节。下方第 0–13 节保留历史修复、发布和清理证据；如与本节冲突，以本节为准。
 
@@ -8,7 +8,7 @@
 
 ### 当前目标
 
-线上已发布版本为 1.1.26；当前隔离源码分支为待发布修复候选 1.1.27。1.1.26 的桌面程序会要求内置 `runtime\node\node.exe`，但原构建流程没有把它加入完整桌面包；在未安装系统 Node.js 的电脑上会提示“内置 Node 运行时缺失”。本候选只修复构建/发布完整性，不改自动出书、守护或业务逻辑：构建会下载并 SHA-256 校验官方 Node.js 24.19.0 x64，再写入 `app\runtime\node\node.exe`；更新器也将该文件列为必需。尚未通知更新会话、提交、推送、制包或发布。
+线上已发布版本为 1.1.27。此前 1.1.26 用户未自动升级的直接原因是主更新入口与安全更新入口的公网 `latest.json` 仍为 1.1.26；旧版启动器能够检查更新，但没有可用的更高版本清单。本次仅完成构建/发布完整性修复，不改自动出书、守护或业务逻辑：完整包含官方 Node.js 24.19.0 x64 的 `app\runtime\node\node.exe`，更新器也将该路径列为必需。
 
 ### 第一步：直接照做的只读确认
 
@@ -32,20 +32,18 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 - 配置引导和自检已兼容 Windows PowerShell 5.1；飞书、企业微信和资源 ID 的占位内容会被自检明确拦截，不会误判为可运行配置。
 - 守护轮次当前顺序为“平台扫描（含失败队列重试）→ 兜底”；保留单 Chrome 登录目录的安全串行，不并行争用浏览器。
 
-### 当前修复候选：1.1.27（仅本地源码，未发布）
+### 1.1.27 发布结果（已完成）
 
-- `app\desktop\build-desktop.ps1` 首次构建从 `https://nodejs.org/dist/v24.19.0/win-x64/node.exe` 下载官方 x64 运行时，校验 SHA-256 `3602F2BB1A10F2CBAB4C36886218A33C1AB3DB87290E73B033C46C77147D0237` 后复制到 `app\runtime\node\node.exe`；缓存命中时仍会校验。
-- `app\desktop\test-bundled-runtime.ps1` 实际运行桌面构建，断言内置 Node 存在、可执行且为 Node 24，并确认更新器 `requiredFiles` 包含该路径。旧构建已按预期失败，新构建本地通过并输出 `v24.19.0`。
-- `app\scripts\run-automation.cmd` 让“运行一次”“打开登录页面”“一键基准”和“处理单本书”统一优先使用包内 Node，只有完整包缺失时才回退系统 Node。`app\desktop\test-desktop-launchers.ps1` 在 PATH 不含 Node 的条件下实际调用该入口并通过；未调用任何业务脚本。
-- `app\automation\scripts\watchdog.ps1` 通过独立解析脚本选择 Node，并同样优先包内运行时。`app\desktop\test-watchdog-runtime.ps1` 验证即使 `DZ_NODE_PATH` 指向另一份 Node，守护入口仍解析为包内运行时；未启动守护循环。
-- `updater\updater-config.json` 已把 `runtime\node\node.exe` 加入 `requiredFiles`。`app\.publish-exclude.txt` 不排除 `runtime`，因此后续候选包必须实际包含该文件。
-- 尚未做完整包审计、隔离升级/回滚、SHA-256 公网回读或下载站验证；不得将本地构建结论写成已发布。
+- 源码已在 main：`663d2ff51580a47e04852c6bf80f17da00b00792`；本地 `npm.cmd test` 的 19 组测试通过。构建与打包在隔离目录完成，未读取、打包或上传 Chrome 登录态、凭据、业务数据或日志。
+- 更新包 `app.zip` 为 38,813,269 字节，SHA-256 `C4B11A4F4773F953F7DB5CEBB04AF327582C57BC0F5CF948927A74AE377E3EE8`，含 197 个应用文件及 `runtime\node\node.exe`（v24.19.0）。完整安装包为 38,826,796 字节，SHA-256 `3301452E57828345FB8643635080AF317CA1DADFCEAE2A0AF54C3C2281D4C003`。
+- 更新器会保留 9 个名称带有 config/settings 的本地文件；完整性清单因此校验其余 188 个稳定程序文件，仍覆盖版本文件、桌面 EXE、启动器、自检脚本和内置 Node。该规则避免把用户本地保留内容误报为更新损坏。
+- 在短路径隔离安装目录，真实 `UpdateAgent` 已完成 `1.1.26 → 1.1.27 → 1.1.26`：升级后内置 Node 为 `v24.19.0`，15 项配置、队列、日志、输入输出、小说和 ChromeProfile 测试夹具哈希变化均为 0；实际 `RollbackApp()` 后版本恢复为 1.1.26，Node 按旧版本预期不存在，夹具仍不变。
+- 公网 HTTPS 回读通过：主入口和安全入口均为 1.1.27，且均引用版本化更新包 `https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/updates/dian-zhong-chu-shu/1.1.27-r1/app.zip`；根目录和 `downloads/` 的 `catalog.json` 均指向 `packages/dian-zhong-chu-shu-1.1.27.zip`。
+- 下载站 `https://download.luotuoqiluotuozhaoma.com/` 已实际渲染 v1.1.27 完整包链接；站点仓库提交为 `25fe217`（`Update Dianzhong download to 1.1.27`）。
 
-### 下一步（须由用户明确授权更新/发布后执行）
+### 下一步
 
-1. 将本隔离分支的源码审核、合并并推送到 main；不要带入 `app\runtime\`、`node_modules`、桌面 EXE、配置、Chrome 登录态或任何业务数据。
-2. 从合并后的干净源码重新构建，审计候选完整包实际含有 `runtime\node\node.exe`，且仍排除用户数据和凭据。
-3. 完成隔离升级/回滚、包 SHA-256、更新入口和下载站公网回读，最后才发布 1.1.27。
+无需再次发布或覆盖线上对象。可在一台仍为 1.1.26 的非生产测试安装中从 `Start.cmd` 启动，观察其升级为 1.1.27；如有失败，只收集版本号、更新器报错和不含凭据的日志摘要，勿复制用户配置、ChromeProfile 或业务数据。
 
 ### 上次发布：1.1.26（已完成）
 
