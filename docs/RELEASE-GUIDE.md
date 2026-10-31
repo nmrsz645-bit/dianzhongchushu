@@ -11,7 +11,7 @@
 | 文档分支推送 | `docs/*` 分支 | 不会。仓库工作流只运行 Node 测试，没有部署步骤。 |
 | 源码合并 | `main` | 不会。`main` 推送会运行 Node 测试，不会上传 OSS 或修改网站。 |
 | GitHub Release | 标签和 Release 资产 | 仅提供完整离线包；不会修改已安装客户端的更新清单。 |
-| 客户端更新/下载站发布 | OSS 的更新清单、完整包、catalog 和网站 `main` | 会影响实际用户，必须单独得到生产授权、完成隔离升级/回滚和公网回读。 |
+| 客户端更新/下载站发布 | OSS 的版本包、客户端更新清单和网站 `main`；历史 catalog 仅在确认读取方时涉及 | 会影响实际用户，必须单独得到生产授权、完成隔离升级/回滚和公网回读。 |
 
 当前 `.github/workflows/test.yml` 只在 `main` 的 push 和 PR 上运行 `npm ci --ignore-scripts`、`npm test`，并且权限为 `contents: read`。没有 GitHub Pages 或 OSS 部署工作流。因此本指南所在的 `docs/*` 分支只用于文档审阅；合并到 `main` 也不会自动发布客户端或网站。
 
@@ -109,8 +109,11 @@ GitHub Release 的完整包不等于可自动升级的安装包：发布完整�
 
 1. 从干净源码构建并制作候选 `app.zip`，对包和每个稳定程序文件计算 SHA-256。
 2. 在隔离的旧版本安装目录执行真实更新与回滚；对 `preservePaths` 中的本机数据做哈希前后对比。
-3. 上传不可变的版本化更新对象后，写入两个 manifest，最后才切换 catalog 和网站卡片。
-4. 通过公网 HTTPS 下载回读、哈希、版本和隔离升级检查后，才宣布发布完成。
+3. 上传不可变的版本化更新对象，并从公网回下载确认哈希；在这之前不改任何客户端 manifest。
+4. 最后才按经验证的现有 schema 切换主/安全 manifest，确保实际客户端入口指向已回读的版本化对象。
+5. `catalog.json` 与 `downloads/catalog.json` 不是默认发布步骤：只有先确认仍存在的具体读取方、兼容字段和单独发布授权时才同步；当前下载站不读取它们。
+6. 下载站当前仅需按其实际 `index.html` 静态卡片/元数据更新；不因历史 catalog 存在而修改它。
+7. 通过公网 HTTPS 下载回读、哈希、版本和隔离升级检查后，才宣布发布完成。
 
 当前实际客户端配置读取安全 manifest：
 
@@ -131,18 +134,18 @@ GitHub Release 的完整包不等于可自动升级的安装包：发布完整�
 | 对象 | 现状与用途 |
 | --- | --- |
 | `updates/dian-zhong-chu-shu-safe/latest.json` | `updater-config.json` 实际引用的安全 manifest。 |
-| `updates/dian-zhong-chu-shu/latest.json` | 同版本的主 manifest；历史发布也同步维护。 |
+| `updates/dian-zhong-chu-shu/latest.json` | 同版本的主 manifest；历史发布曾同步维护，但实际客户端配置当前读取的是安全 manifest。 |
 | `updates/dian-zhong-chu-shu/<版本>-rN/app.zip` | manifest 的版本化增量应用包。 |
-| 根 `catalog.json` | 外部 OSS JSON，不在源码/网站仓库；当前点钟条目为 `dian-zhong-chu-shu`。 |
-| `downloads/catalog.json` | 外部 OSS JSON；历史发布同步维护。 |
+| 根 `catalog.json` | 外部 OSS JSON，不在源码/网站仓库；当前含点钟条目 `dian-zhong-chu-shu`，但当前网站无读取。 |
+| `downloads/catalog.json` | 外部 OSS JSON；同样是历史对象，未确认读取方前不得作为默认发布步骤。 |
 
-当前两个 catalog 的点钟条目字段为 `id`、`name`、`description`、`version`、`visible`、`downloadUrl`；当前值是 `id: dian-zhong-chu-shu`、`version: 1.1.27`、`downloadUrl: packages/dian-zhong-chu-shu-1.1.27.zip`。这两个 JSON 不在本仓库，且没有本仓库内的 catalog 上传脚本。
+当前两个 catalog 的点钟条目字段为 `id`、`name`、`description`、`version`、`visible`、`downloadUrl`；当前值是 `id: dian-zhong-chu-shu`、`version: 1.1.27`、`downloadUrl: packages/dian-zhong-chu-shu-1.1.27.zip`。这两个 JSON 不在本仓库，且没有本仓库内的 catalog 上传脚本；在确认具体消费者之前，保留只读记录即可。
 
 ### 3.2 下载站面
 
 下载站仓库为 <https://github.com/nmrsz645-bit/software-download-center>，GitHub Pages 当前从 `main` 根目录发布。该仓库当前只有 `index.html`、`CNAME` 及与其他产品有关的两份 manifest；它不保存上述 OSS catalog，也没有点钟出书的 catalog 发布脚本。
 
-点钟出书当前是 `index.html` 中的**静态卡片**：没有 DOM `id`，卡片文案/版本和下载锚点都直接写在该文件，下载 URL 当前为 `https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/dian-zhong-chu-shu-1.1.27.zip`。网站的运行时 JavaScript 没有读取点钟出书 manifest；因此更新网站时必须同时核对静态版本文案和静态 URL，不能期待它自动从更新 manifest 刷新。
+点钟出书当前是 `index.html` 中的**静态卡片**：没有 DOM `id`，卡片文案/版本和下载锚点都直接写在该文件，下载 URL 当前为 `https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/dian-zhong-chu-shu-1.1.27.zip`。网站的运行时 JavaScript 没有读取点钟出书 manifest 或历史 catalog；因此更新网站时只核对静态版本文案、静态 URL 和实际下载包，不能期待自动刷新，也不能因为 catalog 存在而改它。
 
 通用网站发布指南由专门更新会话维护：<https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#website>、[#catalog](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#catalog)、[#client-update](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#client-update)、[#verify-rollback](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#verify-rollback)、[#credentials](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#credentials)。2026-10-31 已只读确认该分支和五个锚点可访问；它仍由专门更新会话维护。本节保留点钟专属对象与缺项，且不授权在本项目会话写网站仓库。
 
@@ -156,7 +159,7 @@ GitHub Release 的完整包不等于可自动升级的安装包：发布完整�
 4. 在同一隔离副本使用**已审计的外部更新器工具链**执行其已验证的回滚流程，再核验版本、Node 运行时和用户数据。仓库没有可安全引用的 `RollbackApp()` 命令行入口，不能编造命令。
 5. 访问下载站，核对静态卡片的版本、下载 URL 和实际下载包；GitHub Release、OSS 完整包和客户端 manifest 是三条独立链路，必须分别证明。
 
-可行回滚前提是保留既有版本化对象和上一份已验证 manifest。发生问题时，在获得生产授权后将主/安全 manifest 与两个 catalog/静态网站链接恢复到上一份**已验证**版本；不要删除新对象、覆盖用户资料或以 Git push 代替回滚验证。
+可行回滚前提是保留既有版本化对象和上一份已验证 manifest。发生问题时，在获得生产授权后将主/安全 manifest 恢复到上一份**已验证**版本；静态网站链接只在本次确实已修改时恢复。两个历史 catalog 只有在本次已确认读取方并被明确修改时才随之恢复；不要删除新对象、覆盖用户资料或以 Git push 代替回滚验证。
 
 ## 5. 权限与凭据
 
