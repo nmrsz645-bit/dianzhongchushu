@@ -68,4 +68,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\automation\script
 
 本仓库可在新电脑复现源码检查、自动化测试和桌面 EXE 构建；它**不包含**共享的 Windows 更新器工具链。正式制作并上线更新包前，必须另行取得经过审计的更新器工具链，并完成隔离升级/回滚、SHA-256 和公网回读验证。不得仅因 Git 克隆成功就发布或切换 `latest.json`、`catalog.json`。
 
-下一位维护者请先阅读 [HANDOFF.md](HANDOFF.md) 和 [TIMEOFF.md](TIMEOFF.md)。前者说明源码、完整包、测试和 GitHub 发布；后者保留当前更新通道与历史验收证据。
+下一位维护者请先阅读 [HANDOFF.md](HANDOFF.md)、[docs/RELEASE-GUIDE.md](docs/RELEASE-GUIDE.md) 和 [TIMEOFF.md](TIMEOFF.md)。前者说明源码、完整包、测试和 GitHub 发布；发布指南明确新 Windows 电脑接手、客户端更新与下载站的边界；后者保留当前更新通道与历史验收证据。

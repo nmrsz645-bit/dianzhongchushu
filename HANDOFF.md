@@ -2,6 +2,8 @@
 
 当前维护版本：`1.1.27`。权威源码仓库为 `https://github.com/nmrsz645-bit/dianzhongchushu`，默认分支 `main`；GitHub Release 标签为 `v1.1.27`。发布版本以 `app/version.json` 为准，不以目录名、EXE 修改日期或 OSS 文件名为准。
 
+新 Windows 电脑接手、GitHub 完整包、客户端自动更新与下载站的分工见 [docs/RELEASE-GUIDE.md](docs/RELEASE-GUIDE.md)。特别注意：推送源码或文档分支不等于客户端更新或网站发布。
+
 ## 用途与架构
 
 这是 Windows 本地桌面自动化程序：WinForms 桌面界面负责配置、状态和人工触发；Node.js 自动化负责浏览器扫描、出书、标签、飞书和通知；PowerShell 脚本负责自检、守护和开机自启。程序不会随源码携带用户登录态或业务数据。
@@ -20,7 +22,7 @@ Start.cmd -> app/Start-App.cmd -> app/DianzhongDesktop.exe
 - `app/automation/scripts/`：`bootstrap-config.ps1` 创建本机占位文件；`self-check.ps1` 检查运行条件；`watchdog.ps1` 运行守护。
 - `app/automation/test/`：Node 回归测试；`app/desktop/test-*.ps1` 验证内置 Node、桌面启动器与守护解析。
 - `app/.publish-exclude.txt`：完整包必须排除的用户数据目录与私密文件规则。
-- `updater/updater-config.json`：更新器配置。更新器二进制工具链不在源码仓库；不能把它的本机副本当作源码提交。
+- `updater/`：包含已发布的 `UpdateAgent.exe`、`enabled.flag` 与 `updater-config.json`。更新器的可重建源码和制包工具链不在本仓库；不能把本机二进制副本当作可维护的更新器源码。
 - `TIMEOFF.md`：当前 OSS 自动更新通道、隔离升级/回滚和历史验收记录。
 
 ## 环境、开发与测试
