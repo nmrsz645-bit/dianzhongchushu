@@ -125,6 +125,20 @@ GitHub Release 的完整包不等于可自动升级的安装包：发布完整�
 
 均为 `1.1.27`，并有相同字段：`version`、`url`、`sha256`、`notes`、`files`。实际安全 manifest 的 `url` 指向版本化对象 `updates/dian-zhong-chu-shu/1.1.27-r1/app.zip`。后续版本应先只读读取当前 manifest 的完整 JSON，并使用更新器工具链要求的确切字段；不可由本指南推断或简化 schema。
 
+### 2.4 工具链找回审计（2026-10-31）
+
+本机有可恢复的**完整离线包**能力，但没有可重建的**增量更新器/增量制包器**：
+
+- `app\desktop\build-desktop.ps1` 是已跟踪的桌面构建脚本：编译 `PointChongDesktop.cs`，下载并校验 Node.js 24.19.0 x64，再写入 `app\DianzhongDesktop.exe` 与 `app\runtime\node\node.exe`。
+- 仓库已跟踪 `updater\UpdateAgent.exe`、`updater\enabled.flag` 和 `updater\updater-config.json`。这只能说明已发布二进制可由启动器调用，不提供其 C#/项目文件、增量包生成脚本或 manifest 写入工具。
+- 对全部可见 Git refs 的 `updater/` 路径名和历史提交进行了只读检查；只发现上述二进制、开关和配置，未发现 `.cs`、`.csproj`、`.sln`、更新器 `build`、`pack` 或 `publish` 源文件。
+- 已检查本机已有的 `C:\CodexProjects\gengxin-updater-source`：它是零跟踪文件、无 HEAD 的空 Git 初始化仓库；其配置远端 `nmrsz645-bit/gengxin` 也没有可见 refs，GitHub 仓库元数据为 `size: 0`。因此它不是可找回的更新器源码归档。
+- 历史 `dianzhong-v1127-*` 目录保存候选 ZIP、安装包或更新器二进制，不能当作源代码或安全重新发布素材；本指南不打开、不重打包这些历史候选。
+
+离线可复核的完整包基线为 GitHub `v1.1.27` 的 Windows ZIP：2026-10-31 已验证 204 个条目、根 `Start.cmd`、桌面 EXE、`Start-App.cmd`、内置 Node 与已安装依赖均存在，SHA-256 为 `2CFE60E0264DB2B88EAB05B72B55C2EB4551A74BD7898A427ED6830A42F78690`，且敏感/运行数据路径命中为零。使用同一哈希在内存构造并 JSON 往返验证过 `version`、`url`、`sha256`、`notes`、`files` 五个 manifest 字段；这是**格式检查**，不是 UpdateAgent 对新 manifest 或新 `app.zip` 的接受测试。
+
+结论：桌面程序及完整离线包可在干净环境按本指南重新构建、审计和校验；增量更新包、UpdateAgent 重建和对新 manifest 的端到端接受测试仍缺原始更新器源码/构建工具链。不得用其他项目的更新器、历史 ZIP 或合成 manifest 替代。
+
 ## 3. OSS、下载站与实际映射
 
 这一节只记录已验证的对象关系，**不提供上传命令**；本次文档提交不执行 OSS 上传、manifest/catalog 修改、网站部署或站点仓库写入。
