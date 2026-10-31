@@ -1,6 +1,6 @@
 # 点重出书
 
-Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前待发布源码版本为 `1.1.27`；线上已发布版本为 `1.1.26`。
+Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息、写入飞书，并保存小说文本。当前源码、GitHub 发布包和线上更新版本均为 `1.1.27`。
 
 ## 接手前先读
 
@@ -13,6 +13,23 @@ Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息
 - Windows 10/11、Google Chrome、Node.js 24 或兼容版本。
 - 在 `app/automation` 执行 `npm ci` 安装依赖。
 - 桌面程序可在 `app/desktop` 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File build-desktop.ps1` 构建。首次构建会下载、SHA-256 校验并内置官方 Node.js 24.19.0 x64 运行时；完整桌面包无需另装 Node.js，桌面界面、守护和公开的 BAT 启动入口都会优先使用该运行时。
+
+## GitHub Windows 完整包
+
+从仓库的 **Releases** 下载与版本号相同的 `dianzhongchushu-<version>-windows-x64.zip`，完整解压后运行根目录 `Start.cmd`。该包包含 `app\DianzhongDesktop.exe`、`app\runtime\node\node.exe` 与 `app\automation\node_modules`；不包含任何密钥、Webhook、Chrome 登录态、小说、队列或日志。
+
+首次使用按以下顺序完成：
+
+1. 在程序根目录运行 `app\automation\scripts\bootstrap-config.ps1` 创建本机配置占位文件。
+2. 由实际使用者在本机填写企业微信、飞书、资源 ID 与违禁词配置；不得从聊天、Git 或其他电脑复制真实凭据。
+3. 从桌面程序点击“登录页面”，在 `app\ChromeProfile` 完成后台登录。
+4. 点击“一键自检”；仅全部检查通过后再由使用者决定是否运行自动化。
+
+### 常见问题
+
+- **“内置 Node 运行时缺失”**：完整包必须保留 `app\runtime\node\node.exe`，不要只复制 EXE 或 `app` 的部分文件。若运行的是 GitHub 源码目录而不是 Release 完整包，请执行 `app\desktop\build-desktop.ps1` 后再启动。
+- **自检提示缺少配置或 ChromeProfile**：这是新电脑的正常安全提示；请在本机私密补齐配置/登录，不要伪造占位值。
+- **自动更新没有发生**：GitHub Release 完整包和 OSS 自动更新通道是两个分发入口。自动更新依赖安装目录内经审核的更新器与公网 `latest.json`；不要用 GitHub 源码目录替代已安装目录做升级测试。
 
 ## 验证
 
@@ -50,3 +67,5 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\automation\script
 ## 正式发布边界
 
 本仓库可在新电脑复现源码检查、自动化测试和桌面 EXE 构建；它**不包含**共享的 Windows 更新器工具链。正式制作并上线更新包前，必须另行取得经过审计的更新器工具链，并完成隔离升级/回滚、SHA-256 和公网回读验证。不得仅因 Git 克隆成功就发布或切换 `latest.json`、`catalog.json`。
+
+下一位维护者请先阅读 [HANDOFF.md](HANDOFF.md) 和 [TIMEOFF.md](TIMEOFF.md)。前者说明源码、完整包、测试和 GitHub 发布；后者保留当前更新通道与历史验收证据。

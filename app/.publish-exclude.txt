@@ -20,3 +20,5 @@ DeepSeek接口.txt
 自动化模式.json
 企业微信发送开关.txt
 违禁词.txt
+流程记录.md
+状态面板.txt

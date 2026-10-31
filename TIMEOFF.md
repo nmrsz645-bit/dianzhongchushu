@@ -25,7 +25,7 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 ### 已完成并验证
 
-- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，已发布分支为 main 的 1.1.26；当前修复在隔离分支 `codex/runtime-node-bundle`，`app\version.json` 为 1.1.27，尚未进入 main。
+- 权威源码远程：https://github.com/nmrsz645-bit/dianzhongchushu.git，已发布分支为 main 的 1.1.27；`app\version.json` 为 1.1.27。历史隔离分支 `codex/runtime-node-bundle` 已在 PR #1 合并，不应再次发布同一版本。
 - Git 已纳入源码、依赖锁文件、README、AGENTS、.env.example、发布排除规则和本地使用说明；私密数据均被排除。
 - GitHub 最新 Windows Node 测试已通过：https://github.com/nmrsz645-bit/dianzhongchushu/actions/runs/33321771524。
 - 已从 GitHub 进行全新克隆并在 Windows PowerShell 5.1 验证：配置引导成功、npm ci --ignore-scripts 无依赖漏洞、npm.cmd test 19 项通过、桌面 EXE 构建成功。

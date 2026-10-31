@@ -22,6 +22,8 @@ app/automation/failed/
 app/automation/.retry.json
 app/automation/*.lock
 app/DianzhongDesktop.exe
+app/流程记录.md
+app/状态面板.txt
 
 # Local machine and report artefacts
 *.log
