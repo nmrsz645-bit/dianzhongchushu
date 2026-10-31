@@ -144,7 +144,7 @@ GitHub Release 的完整包不等于可自动升级的安装包：发布完整�
 
 点钟出书当前是 `index.html` 中的**静态卡片**：没有 DOM `id`，卡片文案/版本和下载锚点都直接写在该文件，下载 URL 当前为 `https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/dian-zhong-chu-shu-1.1.27.zip`。网站的运行时 JavaScript 没有读取点钟出书 manifest；因此更新网站时必须同时核对静态版本文案和静态 URL，不能期待它自动从更新 manifest 刷新。
 
-通用网站发布指南由专门更新会话维护：<https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#website>、[#catalog](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#catalog)、[#client-update](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#client-update)、[#verify-rollback](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#verify-rollback)、[#credentials](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#credentials)。2026-10-31 的只读检查时该分支尚不可读取；在它可读并经维护者确认前，仍以本节的点钟专属映射为准，且不要写网站仓库。
+通用网站发布指南由专门更新会话维护：<https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#website>、[#catalog](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#catalog)、[#client-update](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#client-update)、[#verify-rollback](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#verify-rollback)、[#credentials](https://github.com/nmrsz645-bit/software-download-center/blob/docs-cross-pc-handoff/docs/PUBLISHING.md#credentials)。2026-10-31 已只读确认该分支和五个锚点可访问；它仍由专门更新会话维护。本节保留点钟专属对象与缺项，且不授权在本项目会话写网站仓库。
 
 ## 4. 发布后验收与回滚
 
