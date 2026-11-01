@@ -4,14 +4,18 @@ Windows 本地桌面自动化：扫描符合条件的书籍、生成推广信息
 
 ## 接手前先读
 
-1. `AGENTS.md`：开发和数据保护边界。
-2. `TIMEOFF.md`：当前验证、发布记录、已知问题及下一步。
-3. `app/automation/package.json`：Node 脚本和依赖。
+另一台电脑的 Codex 按顺序阅读：
+
+1. [HANDOFF.md](HANDOFF.md)：程序结构、当前成果、缺项和可直接复制的接手指令。
+2. [AGENTS.md](AGENTS.md)：开发和数据保护边界。
+3. [docs/RELEASE-GUIDE.md](docs/RELEASE-GUIDE.md)：新电脑初始化、完整包制作、GitHub/OSS 上传、客户端更新、下载站及回滚。
+
+`TIMEOFF.md` 仅先读顶部“当前交接快照”；下方是历史证据，不能把旧路径、旧版本或旧命令当作本轮操作要求。
 
 ## 开发环境
 
 - Windows 10/11、Google Chrome、Node.js 24 或兼容版本。
-- 在 `app/automation` 执行 `npm ci` 安装依赖。
+- 在 `app/automation` 执行 `npm.cmd ci --ignore-scripts` 安装锁定依赖。
 - 桌面程序可在 `app/desktop` 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File build-desktop.ps1` 构建。首次构建会下载、SHA-256 校验并内置官方 Node.js 24.19.0 x64 运行时；完整桌面包无需另装 Node.js，桌面界面、守护和公开的 BAT 启动入口都会优先使用该运行时。
 
 ## GitHub Windows 完整包

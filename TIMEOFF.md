@@ -1,6 +1,6 @@
 # 点重自动化交接说明
 
-最新交接快照：2026-09-22（北京时间）
+最新交接快照：2026-11-01（北京时间）
 
 > 新会话先只读本节。下方第 0–13 节保留历史修复、发布和清理证据；如与本节冲突，以本节为准。
 
@@ -8,14 +8,18 @@
 
 ### 当前目标
 
-线上已发布版本为 1.1.27。此前 1.1.26 用户未自动升级的直接原因是主更新入口与安全更新入口的公网 `latest.json` 仍为 1.1.26；旧版启动器能够检查更新，但没有可用的更高版本清单。本次仅完成构建/发布完整性修复，不改自动出书、守护或业务逻辑：完整包含官方 Node.js 24.19.0 x64 的 `app\runtime\node\node.exe`，更新器也将该路径列为必需。
+当前目标是让另一台 Windows 电脑的 Codex 接手维护。源码/程序版本为 1.1.27；2026-11-01 只读核对主/安全公网清单仍为 1.1.27。本次只整理并推送交接文档，不发布程序或切换清单。先读 `HANDOFF.md`、`AGENTS.md` 和 `docs/RELEASE-GUIDE.md`；发布指南含完整包、上传、网站与回滚步骤。
+
+GitHub `v1.1.27` 已发布，构建对应源码提交为 `fc20f6c52dd7958bdc70724dbe64901a3da9ff4a`，Windows ZIP SHA-256 为 `2CFE60E0264DB2B88EAB05B72B55C2EB4551A74BD7898A427ED6830A42F78690`。它与历史 OSS ZIP 是不同资产，哈希不可混用。桌面源码和构建脚本完整；UpdateAgent 的已发布二进制存在，原始源码/增量制包工具链仍缺。
 
 ### 第一步：直接照做的只读确认
 
 ~~~powershell
-Set-Location -LiteralPath 'E:\自动化\gengxin\dian-zhong-chu-shu'
+Set-Location -LiteralPath 'C:\CodexProjects\dianzhongchushu'
+git remote -v
 git fetch origin main
 git status --short
+git branch --show-current
 git rev-parse HEAD
 git rev-parse origin/main
 Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
@@ -43,7 +47,7 @@ Get-Content -LiteralPath '.\TIMEOFF.md' -Head 120
 
 ### 下一步
 
-无需再次发布或覆盖线上对象。可在一台仍为 1.1.26 的非生产测试安装中从 `Start.cmd` 启动，观察其升级为 1.1.27；如有失败，只收集版本号、更新器报错和不含凭据的日志摘要，勿复制用户配置、ChromeProfile 或业务数据。
+在新电脑按发布指南第 1 节克隆并进行本地依赖/测试/构建验收，报告未填写配置和未登录项。已有 1.1.27 的发布、隔离升级/回滚记录可追溯，但不代表新电脑业务已验收；不要为接手重新发布同一版本。要发新自动更新包，必须先恢复对应更新器工具链并另获发布授权。
 
 ### 上次发布：1.1.26（已完成）
 
@@ -88,7 +92,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\app\desktop\build-des
 
 ### 关键文件与路径
 
-- 项目根目录：E:\自动化\gengxin\dian-zhong-chu-shu
+- 新电脑约定源码目录：C:\CodexProjects\dianzhongchushu（以实际克隆路径为准；下方历史 E 盘路径不适用于新电脑）
 - 自动化源码：app\automation\src\
 - 自动化测试：app\automation\test\
 - 兜底源码：app\兜底\run-once.js
